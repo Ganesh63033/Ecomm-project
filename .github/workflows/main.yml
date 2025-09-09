@@ -1,27 +1,19 @@
-name: Launch EC2
-
+name: deploy EcommApp
 on:
-  workflow_dispatch:   # Manual trigger
-
+  push:
+    branches: [ "master" ]
 jobs:
-  launch-ec2:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+      - uses: actions/checkout@v4
 
-      - name: Launch EC2 instance
-        run: |
-          aws ec2 run-instances \
-            --image-id ami-0861f4e788f5069dd \   # <-- Replace with correct AMI for your region
-            --count 1 \
-            --instance-type t2.micro \
-            --key-name instance \                 # <-- Replace with your key pair name
-            --security-group-ids sg-07ab18fd975b6df1e \  # <-- Replace with your security group ID
-            --subnet-id subnet-0123456789abcdef0 \       # <-- Replace with subnet ID (if no default VPC)
-            --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=GitHub-EC2}]'
+      - name: Setup jdk 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with maven
+        run: mvn -B package --file pom.xml

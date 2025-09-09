@@ -23,5 +23,5 @@ jobs:
       - name: Deploy to Tomcat
         run: |
           curl -v -u admin:admin \
-          -T /home/runner/work/EcommApp/EcommApp/target/Ecomm.war \
+          -T target/Ecomm.war \
           "http://3.110.179.204:8080/manager/text/deploy?path=/Ecomm&update=true"

@@ -1,7 +1,7 @@
 name: deploy EcommApp
 on:
   push:
-    branches: [ "main" ]   # change to "master" if your branch is master
+    branches: [ "main" ]   # change to "master" if your repo uses master
   workflow_dispatch:
 
 jobs:
@@ -19,3 +19,9 @@ jobs:
 
       - name: Build with maven
         run: mvn -B package --file pom.xml
+
+      - name: Deploy to Tomcat
+        run: |
+          curl -v -u admin:admin \
+          -T /home/runner/work/Ecomm-project/Ecomm-project/target/Ecomm.war \
+          "http://http://52.66.141.125:8080/manager/text/deploy?path=/Ecomm&update=true"
